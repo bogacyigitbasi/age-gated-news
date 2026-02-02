@@ -1,15 +1,20 @@
 {
-  "name": "age-gate-scaffold",
+  "name": "concordium-age-gate-news",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "docker:verifier": "docker compose up -d concordium-verifier",
+    "docker:verifier:stop": "docker compose down"
   },
   "dependencies": {
+    "@walletconnect/sign-client": "^2.23.4",
+    "iron-session": "^8.0.4",
     "next": "16.1.6",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

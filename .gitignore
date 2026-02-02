@@ -32,6 +32,12 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# concordium keys
+/keys/*.export
+/keys/*.json
+!/keys/.gitkeep
 
 # vercel
 .vercel

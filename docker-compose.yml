@@ -1,0 +1,17 @@
+services:
+  concordium-verifier:
+    image: concordium/credential-verification-service:0.1.0
+    platform: linux/amd64
+    container_name: concordium-verifier
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      CREDENTIAL_VERIFICATION_SERVICE_NODE_GRPC_ENDPOINT: "https://grpc.testnet.concordium.com:20000"
+      CREDENTIAL_VERIFICATION_SERVICE_API_ADDRESS: "0.0.0.0:8000"
+      CREDENTIAL_VERIFICATION_SERVICE_MONITORING_ADDRESS: "0.0.0.0:8001"
+      LOG_LEVEL: "info"
+      CREDENTIAL_VERIFICATION_SERVICE_ACCOUNT: "/keys/verifier_account.export"
+    volumes:
+      - ./keys/private.export:/keys/verifier_account.export:ro
