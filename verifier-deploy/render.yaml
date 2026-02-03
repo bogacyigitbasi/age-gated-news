@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: concordium-verifier
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ACCOUNT_KEY_BASE64
+        sync: false  # You'll set this manually in Render dashboard
+      - key: PORT
+        value: 8000
