@@ -1,4 +1,4 @@
-# Stage 1: Prepare files using Alpine (has shell)
+# Stage 1: Prepare files and get busybox (for shell)
 FROM alpine:3.19 AS builder
 
 RUN mkdir -p /app/keys
@@ -8,6 +8,11 @@ RUN chmod +x /app/entrypoint.sh
 
 # Stage 2: Final image
 FROM concordium/credential-verification-service:0.1.0
+
+# Copy busybox (provides /bin/sh) from Alpine since base image has no shell
+COPY --from=builder /bin/busybox /bin/busybox
+COPY --from=builder /bin/sh /bin/sh
+COPY --from=builder /usr/bin/base64 /usr/bin/base64
 
 COPY --from=builder /app/entrypoint.sh /entrypoint.sh
 COPY --from=builder /app/keys /keys
