@@ -1,4 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project: Concordium Age-Gated News (NewsGate)
+
+Next.js 15 (App Router, TypeScript, Tailwind CSS v4) web app that displays news behind an age gate. Users verify age via Concordium ID App using ZK proofs through the Verify & Access flow. No personal data is revealed.
+
+## Architecture
+
+- **Frontend**: Next.js App Router + WalletConnect v2 SignClient + QR code
+- **Backend**: Next.js API routes + iron-session cookies
+- **Verification**: Concordium Verifier Service (Docker, port 8000) handles VPR creation, VP validation, and on-chain anchoring (VRA + VAA)
+- **News**: GNews API + The Guardian API, dual-source with 30-min cache
+
+## Key Technical Details
+
+- Concordium namespace: `ccd`, Testnet chain ID: `ccd:4221332d34e1694168c2a0c0b3fd0f27`
+- WalletConnect method: `request_verifiable_presentation_v1`
+- Deep link scheme: `concordium://wc?uri={encoded}` (mobile only, same for testnet/mainnet)
+- VP from WalletConnect is wrapped in `{ verifiablePresentationJson: {...} }` - must unwrap before sending to Verifier Service
+- Credential statement: `AttributeInRange` on `dob` with dynamically calculated upper bound
+- Trusted issuers: `did:ccd:testnet:idp:0` through `did:ccd:testnet:idp:3`
+- `@concordium/web-sdk` is NOT needed - Verifier Service handles all chain interactions
+- In-memory session store uses `globalThis` pattern to survive dev hot reloads
+
+## Dev Server
+
+- Uses `next dev --webpack` (not Turbopack) to avoid intermittent 404s on API routes
+- Verifier Service Docker: `concordium/credential-verification-service:0.1.0` with `platform: linux/amd64` for Apple Silicon
+- Account key: `keys/private.export` mounted into container
+
+## Commands
+
+- `npm run dev` - Start dev server (webpack mode)
+- `npm run docker:verifier` - Start Concordium Verifier Service
+- `npm run docker:verifier:stop` - Stop Verifier Service
+- `npx next build` - Production build (uses Turbopack, compiles clean)
+
+## Environment Variables
+
+See `.env.example`. Key ones: `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`, `SESSION_SECRET`, `GNEWS_API_KEY`, `GUARDIAN_API_KEY`, `VERIFIER_SERVICE_URL`
+
+## Reference Implementation
+
+The Concordium wallet browser app at `/Users/bogachanyigitbasi/Desktop/Work/IdAppWallet/concordium-wallet/` was used as reference for WalletConnect integration and deep link scheme.
+
+## Known Issues / Future Work
+
+- Debug console.log statements still present in verifier-service.ts, verify/route.ts, useVerification.ts, walletconnect.ts - remove for production
+- Replace in-memory session store with Redis for production
+- Add database persistence for VAR (Verification Audit Records)
+- `Verfiy&Access.pdf` is untracked (intentional - reference doc)
 
 ## Getting Started
 

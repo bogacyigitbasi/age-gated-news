@@ -42,3 +42,12 @@ export function setVerificationSession(session: VerificationSession): void {
 export function deleteVerificationSession(sessionId: string): void {
   sessions.delete(sessionId);
 }
+
+/**
+ * DEV ONLY: Clear all verification sessions
+ */
+export function clearAllVerificationSessions(): number {
+  const count = sessions.size;
+  sessions.clear();
+  return count;
+}

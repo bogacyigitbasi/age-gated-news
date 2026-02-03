@@ -5,10 +5,24 @@ import type { NewsArticle } from "@/types/news";
 import { useVerificationContext } from "@/components/verification/VerificationProvider";
 
 export function NewsCard({ article }: { article: NewsArticle }) {
-  const { isVerified } = useVerificationContext();
+  const { isVerified, requestVerification } = useVerificationContext();
+
+  const handleClick = () => {
+    if (!isVerified) {
+      requestVerification();
+    }
+  };
 
   return (
-    <article className="group relative overflow-hidden rounded-xl bg-white shadow-md transition-shadow hover:shadow-lg">
+    <article
+      className={`group relative overflow-hidden rounded-xl bg-white shadow-md transition-shadow hover:shadow-lg ${
+        !isVerified ? "cursor-pointer" : ""
+      }`}
+      onClick={handleClick}
+      role={!isVerified ? "button" : undefined}
+      tabIndex={!isVerified ? 0 : undefined}
+      onKeyDown={!isVerified ? (e) => e.key === "Enter" && handleClick() : undefined}
+    >
       {/* Image */}
       <div className="relative h-48 bg-gray-200">
         {article.imageUrl ? (
@@ -29,7 +43,7 @@ export function NewsCard({ article }: { article: NewsArticle }) {
         {!isVerified && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
             <span className="rounded-full bg-white/90 px-3 py-1 text-sm font-medium text-gray-800">
-              18+ Verification Required
+              18+ Tap to Verify
             </span>
           </div>
         )}
@@ -68,7 +82,7 @@ export function NewsCard({ article }: { article: NewsArticle }) {
             href={article.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-block text-sm font-medium text-[#00D4AA] hover:underline"
+            className="mt-3 inline-block text-sm font-medium text-[#2B76B9] hover:underline"
           >
             Read full article &rarr;
           </a>

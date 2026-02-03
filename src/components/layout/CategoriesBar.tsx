@@ -29,7 +29,7 @@ export function CategoriesBar({ selected, onSelect }: CategoriesBarProps) {
               onClick={() => onSelect(cat)}
               className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 selected === cat
-                  ? "bg-[#00D4AA] text-white"
+                  ? "bg-[#2B76B9] text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
               aria-current={selected === cat ? "page" : undefined}

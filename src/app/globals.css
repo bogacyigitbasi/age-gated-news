@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-concordium: #00D4AA;
+  --color-concordium: #2B76B9;
+  --color-concordium-hover: #245F96;
   --color-concordium-dark: #1A1A2E;
   --color-concordium-accent: #16213E;
   --font-sans: var(--font-geist-sans);

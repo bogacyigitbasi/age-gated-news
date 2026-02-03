@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { verifyPresentation } from "@/lib/verifier-service";
-import { getSession } from "@/lib/session";
+import { getSession, getSessionVersion } from "@/lib/session";
 import {
   getVerificationSession,
   setVerificationSession,
@@ -30,7 +30,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (verificationSession.status !== "pending") {
+    // Allow retries on iOS by resetting failed sessions back to pending
+    if (verificationSession.status === "failed") {
+      console.log("[Verify] Resetting failed session to pending for retry");
+      verificationSession.status = "pending";
+    } else if (verificationSession.status !== "pending") {
       return NextResponse.json(
         { error: `Session is already ${verificationSession.status}` },
         { status: 409 },
@@ -39,8 +43,10 @@ export async function POST(request: NextRequest) {
 
     const auditRecordId = randomUUID();
 
-    console.log("[Verify] VP (presentation):", JSON.stringify(presentation, null, 2));
-    console.log("[Verify] VPR (verificationRequest):", JSON.stringify(verificationRequest, null, 2));
+    console.log("[Verify] Session ID:", sessionId);
+    console.log("[Verify] Session status:", verificationSession.status);
+    console.log("[Verify] VP (presentation):", JSON.stringify(presentation, null, 2).substring(0, 500) + "...");
+    console.log("[Verify] VPR (verificationRequest):", JSON.stringify(verificationRequest, null, 2).substring(0, 500) + "...");
 
     // Call Concordium Verifier Service to verify VP + anchor VAA on-chain
     const result = await verifyPresentation({
@@ -62,6 +68,7 @@ export async function POST(request: NextRequest) {
       session.isVerified = true;
       session.verifiedAt = Date.now();
       session.anchorTransactionHash = result.anchorTransactionHash;
+      session.sessionVersion = getSessionVersion();
       await session.save();
 
       // In production, persist VAR to a database for audit compliance:
@@ -72,21 +79,27 @@ export async function POST(request: NextRequest) {
         anchorTransactionHash: result.anchorTransactionHash,
       });
     } else {
+      const failReason = result.reason || result.error || "Unknown verification failure";
+      console.log("[Verify] Verification failed, reason:", failReason);
+      console.log("[Verify] Full result:", JSON.stringify(result, null, 2));
+
       setVerificationSession({
         ...verificationSession,
         status: "failed",
-        error: "Verification failed",
+        error: failReason,
       });
 
       return NextResponse.json(
-        { status: "failed", error: "Verifiable presentation could not be verified" },
+        { status: "failed", error: failReason },
         { status: 403 },
       );
     }
   } catch (error) {
-    console.error("Verification verify error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Verification verify error:", errorMessage);
+    console.error("Full error:", error);
     return NextResponse.json(
-      { error: "Failed to verify presentation" },
+      { error: errorMessage },
       { status: 500 },
     );
   }

@@ -19,8 +19,8 @@ export const TRUSTED_ISSUERS = {
 } as const;
 
 export const CONCORDIUM_DEEPLINK = {
-  testnet: "concordium",
-  mainnet: "concordium",
+  testnet: "concordiumidapp",
+  mainnet: "concordiumidapp",
 } as const;
 
 export type ConcordiumNetwork = "testnet" | "mainnet";

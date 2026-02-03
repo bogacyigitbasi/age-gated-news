@@ -8,7 +8,7 @@ export function Footer() {
             href="https://concordium.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-[#00D4AA] hover:underline"
+            className="font-medium text-[#2B76B9] hover:underline"
           >
             Concordium
           </a>{" "}

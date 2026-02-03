@@ -1,10 +1,29 @@
 import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 
+/**
+ * Global session version - increment to invalidate all existing sessions.
+ * Uses globalThis to survive hot module reloads in development.
+ */
+const globalForSessionVersion = globalThis as unknown as {
+  __sessionVersion?: number;
+};
+globalForSessionVersion.__sessionVersion ??= 1;
+
+export function getSessionVersion(): number {
+  return globalForSessionVersion.__sessionVersion ?? 1;
+}
+
+export function incrementSessionVersion(): number {
+  globalForSessionVersion.__sessionVersion = (globalForSessionVersion.__sessionVersion ?? 1) + 1;
+  return globalForSessionVersion.__sessionVersion;
+}
+
 export interface SessionData {
   isVerified: boolean;
   verifiedAt?: number;
   anchorTransactionHash?: string;
+  sessionVersion?: number;
 }
 
 export const sessionOptions: SessionOptions = {

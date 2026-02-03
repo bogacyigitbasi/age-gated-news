@@ -9,7 +9,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#00D4AA]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2B76B9]">
             <span className="text-lg font-bold text-white">N</span>
           </div>
           <div>
