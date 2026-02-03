@@ -6,4 +6,4 @@ else
   echo "ERROR: ACCOUNT_KEY_BASE64 environment variable not set"
   exit 1
 fi
-exec /credential-verification-service
+exec /usr/local/bin/credential-verification-service

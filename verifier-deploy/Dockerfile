@@ -1,27 +1,33 @@
-# Stage 1: Prepare files and get busybox (for shell)
-FROM alpine:3.19 AS builder
+# Copy binary from Concordium image
+FROM --platform=linux/amd64 concordium/credential-verification-service:0.1.0 AS concordium
 
-RUN mkdir -p /app/keys
+# Use Debian slim (glibc-based, matches Concordium's libs)
+FROM --platform=linux/amd64 debian:bookworm-slim
 
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# Install required libs
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libstdc++6 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Stage 2: Final image
-FROM concordium/credential-verification-service:0.1.0
+# Copy everything from Concordium image (binary + libs)
+COPY --from=concordium /usr/local/bin/credential-verification-service /usr/local/bin/credential-verification-service
+COPY --from=concordium /usr/lib/ /usr/lib/
+COPY --from=concordium /lib64 /lib64
 
-# Copy busybox (provides /bin/sh) from Alpine since base image has no shell
-COPY --from=builder /bin/busybox /bin/busybox
-COPY --from=builder /bin/sh /bin/sh
-COPY --from=builder /bin/base64 /bin/base64
+# Create keys directory
+RUN mkdir -p /keys
 
-COPY --from=builder /app/entrypoint.sh /entrypoint.sh
-COPY --from=builder /app/keys /keys
+# Copy entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-ENV CCD_NETWORK=testnet
-ENV CCD_GRPC_IP=grpc.testnet.concordium.com
-ENV CCD_GRPC_PORT=20000
-ENV LOG_LEVEL=info
-ENV ACCOUNT_KEYS_PATH=/keys/private.export
+# Environment variables using the correct names from CLI help
+ENV CREDENTIAL_VERIFICATION_SERVICE_NODE_GRPC_ENDPOINT=https://grpc.testnet.concordium.com:20000
+ENV CREDENTIAL_VERIFICATION_SERVICE_ACCOUNT=/keys/private.export
+ENV CREDENTIAL_VERIFICATION_SERVICE_API_ADDRESS=0.0.0.0:8000
+ENV CREDENTIAL_VERIFICATION_SERVICE_MONITORING_ADDRESS=0.0.0.0:8001
+ENV CREDENTIAL_VERIFICATION_SERVICE_LOG_LEVEL=info
 
 EXPOSE 8000
 
