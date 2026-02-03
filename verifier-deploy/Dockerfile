@@ -12,7 +12,7 @@ FROM concordium/credential-verification-service:0.1.0
 # Copy busybox (provides /bin/sh) from Alpine since base image has no shell
 COPY --from=builder /bin/busybox /bin/busybox
 COPY --from=builder /bin/sh /bin/sh
-COPY --from=builder /usr/bin/base64 /usr/bin/base64
+COPY --from=builder /bin/base64 /bin/base64
 
 COPY --from=builder /app/entrypoint.sh /entrypoint.sh
 COPY --from=builder /app/keys /keys
