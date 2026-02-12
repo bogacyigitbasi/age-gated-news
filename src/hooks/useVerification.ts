@@ -6,10 +6,10 @@ import { NETWORK } from "@/lib/config";
 
 // Dynamically import the SDK to avoid SSR issues (it accesses window/DOM)
 async function getSDK() {
-  const { ConcordiumVerificationWebUI } = await import(
+  const { ConcordiumVerificationWebUI, resetSDK } = await import(
     "@concordium/verification-web-ui"
   );
-  return ConcordiumVerificationWebUI;
+  return { ConcordiumVerificationWebUI, resetSDK };
 }
 
 interface UseVerificationReturn {
@@ -25,7 +25,7 @@ export function useVerification(): UseVerificationReturn {
   const [error, setError] = useState<string | null>(null);
   const [anchorHash, setAnchorHash] = useState<string | null>(null);
   const sdkRef = useRef<InstanceType<
-    Awaited<ReturnType<typeof getSDK>>
+    Awaited<ReturnType<typeof getSDK>>["ConcordiumVerificationWebUI"]
   > | null>(null);
   const sessionIdRef = useRef<string | null>(null);
   const vprRef = useRef<unknown>(null);
@@ -153,8 +153,13 @@ export function useVerification(): UseVerificationReturn {
       setState("connecting");
       setError(null);
 
-      const SDKClass = await getSDK();
-      const sdk = new SDKClass({
+      const { ConcordiumVerificationWebUI, resetSDK } = await getSDK();
+
+      // Clear stale WalletConnect sessions and localStorage flags
+      // to prevent the "returning user" modal from showing
+      resetSDK();
+
+      const sdk = new ConcordiumVerificationWebUI({
         network: NETWORK,
         projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
         metadata: {
