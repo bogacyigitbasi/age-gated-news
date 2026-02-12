@@ -42,6 +42,7 @@ export function useVerification(): UseVerificationReturn {
       const { type, data } = (event as CustomEvent).detail;
 
       switch (type) {
+        case "active_session":
         case "session_approved": {
           const { topic } = data;
           setState("creating_vpr");
