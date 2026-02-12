@@ -1,6 +1,7 @@
 # Project: Concordium Age-Gated News (NewsGate)
 
 Next.js 15 (App Router, TypeScript, Tailwind CSS v4) web app that displays news behind an age gate. Users verify age via Concordium ID App using ZK proofs through the Verify & Access flow. No personal data is revealed.
+Try it out from: https://age-gated-news.vercel.app/ 
 
 ## Architecture
 
