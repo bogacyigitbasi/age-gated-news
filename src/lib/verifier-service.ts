@@ -15,6 +15,7 @@ export async function createVerificationRequest(params: {
     connectionId: params.connectionId,
     resourceId: params.resourceId,
     contextString: params.contextString,
+    public_info: { merchant: "age gated news site" },
     requestedClaims: [
       {
         type: "identity",
