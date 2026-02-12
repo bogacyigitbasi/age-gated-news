@@ -11,9 +11,10 @@
     "docker:verifier:stop": "docker compose down"
   },
   "dependencies": {
-    "@concordium/verification-web-ui": "^0.1.0",
+    "@walletconnect/sign-client": "^2.23.4",
     "iron-session": "^8.0.4",
     "next": "16.1.6",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

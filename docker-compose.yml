@@ -12,6 +12,6 @@ services:
       CREDENTIAL_VERIFICATION_SERVICE_API_ADDRESS: "0.0.0.0:8000"
       CREDENTIAL_VERIFICATION_SERVICE_MONITORING_ADDRESS: "0.0.0.0:8001"
       LOG_LEVEL: "info"
-      CREDENTIAL_VERIFICATION_SERVICE_ACCOUNT: "/keys/private.export"
+      CREDENTIAL_VERIFICATION_SERVICE_ACCOUNT: "/keys/verifier_account.export"
     volumes:
-      - ./keys/private.export:/keys/private.export:ro
+      - ./keys/private.export:/keys/verifier_account.export:ro
