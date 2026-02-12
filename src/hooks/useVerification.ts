@@ -28,6 +28,7 @@ export function useVerification(): UseVerificationReturn {
     Awaited<ReturnType<typeof getSDK>>
   > | null>(null);
   const sessionIdRef = useRef<string | null>(null);
+  const vprRef = useRef<unknown>(null);
   const stateRef = useRef<VerificationFlowState>("idle");
 
   // Keep stateRef in sync so the onClose callback reads current state
@@ -63,6 +64,7 @@ export function useVerification(): UseVerificationReturn {
 
             const { sessionId, vpr } = await createRes.json();
             sessionIdRef.current = sessionId;
+            vprRef.current = vpr;
 
             // Send VPR through SDK's WalletConnect session
             setState("awaiting_proof");
@@ -89,6 +91,7 @@ export function useVerification(): UseVerificationReturn {
               body: JSON.stringify({
                 sessionId: sessionIdRef.current,
                 presentation: data,
+                verificationRequest: vprRef.current,
               }),
             });
 
@@ -141,6 +144,7 @@ export function useVerification(): UseVerificationReturn {
     setError(null);
     setAnchorHash(null);
     sessionIdRef.current = null;
+    vprRef.current = null;
     sdkRef.current?.closeModal();
   }, []);
 
